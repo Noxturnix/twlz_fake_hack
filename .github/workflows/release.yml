@@ -1,0 +1,28 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+      - name: Build app for release
+        run: msbuild twlz_fake_hack.sln -t:Rebuild -p:Configuration=Release -p:Platform=x86
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            Release/twlz_fake_hack.dll
+            Release/twlz_fake_hack.pdb
